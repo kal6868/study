@@ -43,10 +43,39 @@ def main():
         # num_workers=num_workers, pin_memory=True, persistent_workers=True
         )
 
-
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = AutoModelForSequenceClassification.from_pretrained(
         "bert-base-uncased",
         num_labels=2
     )
     print(model)
+
+    epochs = 200
+    patience = 20
+    gpu_parallel = True
+    lr = {
+        "max_lr": 2e-5,
+        "min_lr": 1e-8,
+        "cycle": 10,
+        "multi_delay": 1,
+    }
+
+    model.to(device)
+    if gpu_parallel:
+        model = torch.nn.DataParallel(model)
+    
+    loss_fn = torch.nn.CrossEntropyLoss()
+    optimizer = torch.optim.AdamW(model.parameters(), lr=lr["max_lr"])
+    scheduler = CosineAnnealingWarmRestarts(
+        optimizer, T_0=lr["cycle"], T_mult=lr["multi_delay"], eta_min=lr["min_lr"],
+    )
+    att_type = ['neg', 'pos']
+    Train(
+        epochs = epochs, save_path = save_path, patience = patience,
+        model = model, loss_fn = loss_fn, optimizer = optimizer, scheduler = None,
+        gpu_parallel = gpu_parallel, device = device, att_type = att_type,
+        train_dataloader = train_loader, valid_dataloader = valid_loader, test_dataloader = test_loader
+        )
+
+if __name__ == '__main__':
+    main()
