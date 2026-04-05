@@ -28,6 +28,8 @@ raw_test_ds = tf.keras.utils.text_dataset_from_directory(
 
 ```markdown
 ### Python
+
+# 1
 class Custom_tf_encoder(nn.Module):
     def __init__(self, used_word, embed_dim, nhead, encoder_layers, max_len=500):
         super().__init__()
@@ -51,4 +53,11 @@ class Custom_tf_encoder(nn.Module):
         x = self.fc(x)
         
         return x
+
+# 2
+from transformers import AutoModelForSequenceClassification
+    model = AutoModelForSequenceClassification.from_pretrained(
+        "bert-base-uncased",
+        num_labels=2
+    )
 ```
