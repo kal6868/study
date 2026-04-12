@@ -44,5 +44,51 @@ def main():
         # num_workers=num_workers, pin_memory=True, persistent_workers=True
         )
 
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = models.resnet50(weights=models.ResNet50_Weights.DEFAULT)
+    model.fc = nn.Linear(model.fc.in_features, 37)
+    print(model)
+
+    epochs = 200
+    patience = 20
+    gpu_parallel = True
+    lr = {
+        "max_lr": 1e-2,
+        "momentum": 9e-1,
+        "weight_decay": 1e-4,
+        "T_max": 50
+    }
+
+    model.to(device)
+    if gpu_parallel:
+        model = torch.nn.DataParallel(model)
+    
+    loss_fn = torch.nn.CrossEntropyLoss()
+    optimizer = torch.optim.SGD(
+    model.parameters(),
+    lr=lr['max_lr'],
+    momentum=lr['momentum'],
+    weight_decay=lr['weight_decay']
+    )   
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+        optimizer,
+        T_max=lr["T_max"]
+    )
+    att_type = ['Abyssinian', 'American Bulldog','American Pit Bull Terrier', 'Basset Hound',
+        'Beagle', 'Bengal', 'Birman', 'Bombay', 'Boxer', 'British Shorthair','Chihuahua',
+        'Egyptian Mau', 'English Cocker Spaniel', 'English Setter', 'German Shorthaired',
+        'Great Pyrenees', 'Havanese', 'Japanese Chin', 'Keeshond', 'Leonberger',
+        'Maine Coon', 'Miniature Pinscher', 'Newfoundland', 'Persian', 'Pomeranian',
+        'Pug', 'Ragdoll', 'Russian Blue', 'Saint Bernard', 'Samoyed', 'Scottish Terrier',
+        'Shiba Inu', 'Siamese', 'Sphynx', 'Staffordshire Bull Terrier', 'Wheaten Terrier',
+        'Yorkshire Terrier']
+    
+    Train(
+        epochs = epochs, save_path = save_path, patience = patience,
+        model = model, loss_fn = loss_fn, optimizer = optimizer, scheduler = scheduler,
+        gpu_parallel = gpu_parallel, device = device, att_type = att_type,
+        train_dataloader = train_loader, valid_dataloader = valid_loader, test_dataloader = test_loader
+        )
+
 if __name__ == '__main__':
     main()
