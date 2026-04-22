@@ -19,3 +19,16 @@ docker run -d  --gpus=all \
   ollama/ollama
 
 ```
+## Download models from Ollama Hub
+```markdown
+### Shell
+Download a model
+# ollama pull <model>:<tag>
+ollama pull phi3:3.8B
+
+Get Information about the model
+ollama show phi3:3.8B
+
+View the list of models
+ollama list
+```
