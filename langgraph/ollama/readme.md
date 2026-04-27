@@ -1,7 +1,8 @@
-## Image Download
+## Image Download & Install Package
 ```markdown
 ### Shell
 docker pull ollama/ollama
+pip install ollama langgraph langchain-core langchain-ollama
 ```
 
 ## Container Run
