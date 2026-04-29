@@ -23,13 +23,17 @@ docker run -d  --gpus=all \
 ## Download models from Ollama Hub
 ```markdown
 ### Shell
-Download a model
+# Download a model
 # ollama pull <model>:<tag>
 ollama pull phi3:3.8B
+ollama pull gemma4:e2b
 
-Get Information about the model
+# Get Information about the model
 ollama show phi3:3.8B
 
-View the list of models
+# View the list of models
 ollama list
+
+# Test weather device can operate model
+ollama run gemma4:e2b
 ```
